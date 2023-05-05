@@ -13,13 +13,13 @@ echo "adding waves"
 
   view wave
   delete wave /*
-  
+
   add wave  -expand             -group "dut i/o"     -ports            /tb_aes/dut/*
   add wave  -expand -radix hex  -group "dut sig"     -internal         /tb_aes/dut/*
-  
+
   add wave  -expand -radix hex  -group "i_key_expand"            -internal         /tb_aes/dut/i_key_expand/*
   add wave  -expand -radix hex  -group "i_trf_addroundkey"       -internal         /tb_aes/dut/i_trf_addroundkey/*
-  
+
   add wave  -expand -radix hex  -group "1.i_trf_subbytes"        -internal         /tb_aes/dut/gen_rounds(1)/i_trf_subbytes/*
   add wave  -expand -radix hex  -group "1.i_trf_shiftrows"       -internal         /tb_aes/dut/gen_rounds(1)/i_trf_shiftrows/*
   add wave  -expand -radix hex  -group "1.i_trf_mixcolumns"      -internal         /tb_aes/dut/gen_rounds(1)/i_trf_mixcolumns/*
@@ -34,6 +34,7 @@ echo "view wave forms"
   set StdArithNoWarnings 0
 
   run 10 us
+
 
   configure wave -namecolwidth  370
   configure wave -valuecolwidth 180

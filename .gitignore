@@ -10,3 +10,5 @@ modelsim/*
 !modelsim/*.do
 
 cavp
+
+scripts/vivado/output/

@@ -3,6 +3,11 @@
 --  rev. 1.0 : 2023 Provoost Kris
 ------------------------------------------------------------------------------
 
+
+echo "Remove old files"
+
+  file delete vsim.wlf
+
   proc delete_lib { lib } { if ![file isdirectory $lib] { vdel -all -lib $lib } }
   proc ensure_lib { lib } { if ![file isdirectory $lib] { vlib $lib } }
 
