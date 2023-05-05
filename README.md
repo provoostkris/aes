@@ -16,7 +16,7 @@ trf_mixcolumns.vhd   : cypher transformation 'mix columns'
 trf_shiftrows.vhd    : cypher transformation 'shift rows'
 trf_subbytes.vhd     : cypher transformation 'substitute bytes'
 ```
-[vhdl](bench/) test bench files
+and a set of [test benches](bench/) for verification support
 
 ```
 tb_aes.vhd              : core level test bench
@@ -27,12 +27,18 @@ tb_trf_shiftrows.vhd    : component level test bench
 tb_trf_subbytes.vhd     : component level test bench
 ```
 
-### dependencies
+### Dependencies
 The code will work stand alone, compile in desired library and use as is.
 
-### useage
+### Useage
 The design can be used to study a possible implementation, based on the FIPS 197 publication. The code is 100 % synhtesizeable.
-A reference project for [quartus](quartus/) is included: 
+A reference project for [quartus](quartus/) is included.
+The code is an unrolled implementation, meaning all rounds have dedicated logic, and the datastream passes through a new set of transformation logic for each round. 
+Optimization is possible in the transformation functions and in the data processing method.
+The design is implented as single clock synchronous processing, which avoids clock domain crossing.
 
 ### User input
 *SW(0) is used to reset the design.
+
+### support 
+If you like the work and want to support, you can buy me a coffee ! : https://www.buymeacoffee.com/provoostkris
