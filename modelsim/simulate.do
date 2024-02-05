@@ -14,16 +14,18 @@ echo "adding waves"
   view wave
   delete wave /*
 
+  add wave  -expand             -group "bench"                         /tb_aes/*
+  
   add wave  -expand             -group "dut i/o"     -ports            /tb_aes/dut/*
   add wave  -expand -radix hex  -group "dut sig"     -internal         /tb_aes/dut/*
 
-  add wave  -expand -radix hex  -group "i_key_expand"            -internal         /tb_aes/dut/i_key_expand/*
-  add wave  -expand -radix hex  -group "i_trf_addroundkey"       -internal         /tb_aes/dut/i_trf_addroundkey/*
+  add wave          -radix hex  -group "i_key_expand"            -internal         /tb_aes/dut/i_key_expand/*
+  add wave          -radix hex  -group "i_trf_addroundkey"       -internal         /tb_aes/dut/i_trf_addroundkey/*
 
-  add wave  -expand -radix hex  -group "1.i_trf_subbytes"        -internal         /tb_aes/dut/gen_rounds(1)/i_trf_subbytes/*
-  add wave  -expand -radix hex  -group "1.i_trf_shiftrows"       -internal         /tb_aes/dut/gen_rounds(1)/i_trf_shiftrows/*
-  add wave  -expand -radix hex  -group "1.i_trf_mixcolumns"      -internal         /tb_aes/dut/gen_rounds(1)/i_trf_mixcolumns/*
-  add wave  -expand -radix hex  -group "1.i_trf_addroundkey"     -internal         /tb_aes/dut/gen_rounds(1)/i_trf_addroundkey/*
+  add wave          -radix hex  -group "1.i_trf_subbytes"        -internal         /tb_aes/dut/gen_rounds(1)/i_trf_subbytes/*
+  add wave          -radix hex  -group "1.i_trf_shiftrows"       -internal         /tb_aes/dut/gen_rounds(1)/i_trf_shiftrows/*
+  add wave          -radix hex  -group "1.i_trf_mixcolumns"      -internal         /tb_aes/dut/gen_rounds(1)/i_trf_mixcolumns/*
+  add wave          -radix hex  -group "1.i_trf_addroundkey"     -internal         /tb_aes/dut/gen_rounds(1)/i_trf_addroundkey/*
 
 echo "view wave forms"
 

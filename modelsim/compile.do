@@ -3,17 +3,19 @@
 --  rev. 1.0 : 2023 Provoost Kris
 ------------------------------------------------------------------------------
 
+# Clearing the transcript window:
+.main clear
 
 echo "Remove old files"
 
-  file delete vsim.wlf
+  proc detect_lib { lib } { if { [file exists $lib]} { echo " library detected $lib" } }
+  proc delete_lib { lib } { if { [file exists $lib]} { file delete -force $lib } }
+  proc ensure_lib { lib } { if {![file exists $lib]} { vlib $lib } }
 
-  proc delete_lib { lib } { if ![file isdirectory $lib] { vdel -all -lib $lib } }
-  proc ensure_lib { lib } { if ![file isdirectory $lib] { vlib $lib } }
-
+  detect_lib work
   delete_lib work
   ensure_lib work
-
+  
 echo "Compiling design"
 
   vcom  -quiet -work work ../vhdl/aes_pkg.vhd
@@ -30,12 +32,12 @@ echo "Compiling design"
 
 echo "Compiling test bench"
 
-  vcom  -quiet -work work ../bench/tb_trf_subbytes.vhd
-  vcom  -quiet -work work ../bench/tb_trf_shiftrows.vhd
-  vcom  -quiet -work work ../bench/tb_trf_mixcolumns.vhd
-  vcom  -quiet -work work ../bench/tb_trf_addroundkey.vhd
-  vcom  -quiet -work work ../bench/tb_key_expand.vhd
-  vcom  -quiet -work work ../bench/tb_aes.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_trf_subbytes.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_trf_shiftrows.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_trf_mixcolumns.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_trf_addroundkey.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_key_expand.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_aes.vhd
 
 
 echo "Compilation script completed "
