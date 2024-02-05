@@ -66,6 +66,9 @@ begin
   --! clk drivers
 	clk    <= not clk  after c_clk_per/2;
 
+  --! unused for now
+  y <= 'Z';
+  
 	--! run test bench
 	p_run: process
 
@@ -121,35 +124,30 @@ begin
       for j in 1 to c_nr loop
 
         v_slv_seq := alias_start(j);
-        proc_wait_clk(1);
         report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
         swrite(v_wline, "round[" & integer'image(j) &"].start ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
         v_slv_seq := alias_s_box(j);
-        proc_wait_clk(1);
         report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
         swrite(v_wline, "round[" & integer'image(j) &"].s_box ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
         v_slv_seq := alias_s_row(j);
-        proc_wait_clk(1);
         report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
         swrite(v_wline, "round[" & integer'image(j) &"].s_row ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
         v_slv_seq := alias_m_col(j);
-        proc_wait_clk(1);
         report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
         swrite(v_wline, "round[" & integer'image(j) &"].m_col ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
         v_slv_seq := alias_k_sch(j);
-        proc_wait_clk(1);
         report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
         swrite(v_wline, "round[" & integer'image(j) &"].k_sch ");
         hwrite(v_wline, v_slv_seq);
