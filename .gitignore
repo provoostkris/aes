@@ -1,10 +1,9 @@
-quartus/db
-quartus/incremental_db
-quartus/output_files
-quartus/simulation
-quartus/*
-!quartus/*.qsf
-!quartus/*.qpf
+scripts/quartus/db
+scripts/quartus/incremental_db
+scripts/quartus/output_files
+scripts/quartus/simulation
+scripts/quartus/*
+!scripts/quartus/*.tcl
 
 modelsim/*
 !modelsim/*.do
