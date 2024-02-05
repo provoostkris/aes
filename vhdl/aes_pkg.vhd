@@ -21,10 +21,6 @@ package aes_pkg is
   constant c_nb     : natural :=  4; --! block size (words)
   constant c_nr     : natural := 14; --! number of rounds
   
-  
-  constant c_ref_plain : std_logic_vector(0 to 127) := x"00112233445566778899aabbccddeeff" ; --! value from fips 197 document
-  constant c_ref_key   : std_logic_vector(0 to 255) := x"000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"; --! value from fips 197 document
-
   type t_raw_bytes          is array ( integer range <> ) of std_logic_vector( 7 downto 0);
   type t_state_bytes        is array ( integer range <> ) of t_raw_bytes ( 0 to 3);
   type t_raw_words          is array ( integer range <> ) of std_logic_vector(0 to 31);
