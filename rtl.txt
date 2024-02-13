@@ -1,4 +1,3 @@
-vhdl/aes.vhd
 vhdl/aes_pkg.vhd
 vhdl/galois_mul.vhd
 vhdl/key_expand.vhd
@@ -7,3 +6,5 @@ vhdl/trf_addroundkey.vhd
 vhdl/trf_mixcolumns.vhd
 vhdl/trf_shiftrows.vhd
 vhdl/trf_subbytes.vhd
+vhdl/aes.vhd
+vhdl/aes_wrap.vhd

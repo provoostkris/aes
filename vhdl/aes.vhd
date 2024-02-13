@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
---  TOP level design file for HDMI controller <> Terrasic DE10 nano Cyclone 5 design
+--  AES encryption algorithm
 --  rev. 1.0 : 2021 Provoost Kris
 ------------------------------------------------------------------------------
 
@@ -16,9 +16,21 @@ entity aes is
     clk           : in  std_logic;                      --! system clock
     rst_n         : in  std_logic;                      --! active low reset
 
-    key_s         : in  std_logic_vector(0 to c_key-1); --! key input
-    dat_s         : in  std_logic_vector(0 to c_seq-1); --! dat input
-    dat_m         : out std_logic_vector(0 to c_seq-1)  --! dat output
+    s_key_tready  : out std_logic;                                --! key input
+    s_key_tdata   : in  std_logic_vector(c_key-1 downto 0);
+    s_key_tlast   : in  std_logic;
+    s_key_tvalid  : in  std_logic;
+
+    s_dat_tready  : out std_logic;                                --! dat input
+    s_dat_tdata   : in  std_logic_vector(c_seq-1 downto 0);
+    s_dat_tlast   : in  std_logic;
+    s_dat_tvalid  : in  std_logic;
+
+    m_dat_tvalid  : out std_logic;                               --! dat output
+    m_dat_tdata   : out std_logic_vector(c_seq-1 downto 0);
+    m_dat_tlast   : out std_logic;
+    m_dat_tready  : in  std_logic
+
   );
 end;
 
@@ -48,10 +60,10 @@ begin
 --!
 
   --! assign the data input to the first stage of the process
-  subbytes_s(0)   <=  dat_s;
+  subbytes_s(0)   <=  s_dat_tdata;
 
   --! assign the key to the expansion component
-  keyexpand_s     <=  key_s;
+  keyexpand_s     <=  s_key_tdata;
 
 --! start with the key expansion
   i_key_expand: entity work.key_expand(rtl)
@@ -136,6 +148,6 @@ gen_rounds:  for j in 1 to c_nr generate
 end generate;
 
 --! the output state is the result of the last transformation in the last round
-dat_m  <= addroundkey_m(c_nr);
+m_dat_tdata  <= addroundkey_m(c_nr);
 
 end architecture rtl;

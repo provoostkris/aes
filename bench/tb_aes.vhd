@@ -36,10 +36,18 @@ architecture rtl of tb_aes is
   signal rst_n          : std_ulogic :='0';
 
   --! DUT ports
-  signal key_s : std_logic_vector(0 to c_key-1); --! key input
-  signal dat_s : std_logic_vector(0 to c_seq-1); --! dat input
-  signal dat_m : std_logic_vector(0 to c_seq-1); --! dat output
-
+  signal s_key_tready  :  std_logic;                                --! key input
+  signal s_key_tdata   :  std_logic_vector(c_key-1 downto 0);
+  signal s_key_tlast   :  std_logic;
+  signal s_key_tvalid  :  std_logic;
+  signal s_dat_tready  :  std_logic;                                --! dat input
+  signal s_dat_tdata   :  std_logic_vector(c_seq-1 downto 0);
+  signal s_dat_tlast   :  std_logic;
+  signal s_dat_tvalid  :  std_logic;
+  signal m_dat_tvalid  :  std_logic;                               --! dat output
+  signal m_dat_tdata   :  std_logic_vector(c_seq-1 downto 0);
+  signal m_dat_tlast   :  std_logic;
+  signal m_dat_tready  :  std_logic;
 
   --! procedures
   procedure proc_wait_clk
@@ -54,13 +62,23 @@ begin
 
   dut: entity work.aes(rtl)
     port map (
+      clk           => clk,
+      rst_n         => rst_n,
 
-    clk           => clk,
-    rst_n         => rst_n,
+      s_key_tready  => s_key_tready ,
+      s_key_tdata   => s_key_tdata  ,
+      s_key_tlast   => s_key_tlast  ,
+      s_key_tvalid  => s_key_tvalid ,
 
-    key_s         => key_s,
-    dat_s         => dat_s,
-    dat_m         => dat_m
+      s_dat_tready  => s_dat_tready ,
+      s_dat_tdata   => s_dat_tdata  ,
+      s_dat_tlast   => s_dat_tlast  ,
+      s_dat_tvalid  => s_dat_tvalid ,
+
+      m_dat_tvalid  => m_dat_tvalid ,
+      m_dat_tdata   => m_dat_tdata  ,
+      m_dat_tlast   => m_dat_tlast  ,
+      m_dat_tready  => m_dat_tready
     );
 
   --! clk drivers
@@ -68,7 +86,7 @@ begin
 
   --! unused for now
   y <= 'Z';
-  
+
 	--! run test bench
 	p_run: process
 
@@ -90,8 +108,12 @@ begin
 
 	  report " RUN TST.00 ";
 
-      key_s <= ( others => '0');
-      dat_s <= ( others => '0');
+      s_key_tdata  <= ( others => '0');
+      s_key_tlast  <= '0';
+      s_key_tvalid <= '0';
+      s_dat_tdata  <= ( others => '0');
+      s_dat_tlast  <= '0';
+      s_dat_tvalid <= '0';
       rst_n <= '0';
       proc_wait_clk(2);
       rst_n <= '1';
@@ -104,8 +126,12 @@ begin
       file_open(file_inputs, "../references/fips_197_c3.txt",  read_mode);
       file_open(file_results, "output_results.txt", write_mode);
 
-      key_s <= c_ref_key;
-      dat_s <= c_ref_plain;
+      s_key_tdata  <= c_ref_key;
+      s_key_tlast  <= '0';
+      s_key_tvalid <= '0';
+      s_dat_tdata  <= c_ref_plain;
+      s_dat_tlast  <= '0';
+      s_dat_tvalid <= '0';
       rst_n <= '0';
       proc_wait_clk(2);
       rst_n <= '1';
@@ -118,7 +144,7 @@ begin
         read(v_rline, v_space);           -- read in the space character
         hread(v_rline, v_check);
 
-        report "Verify : " & v_round & " - " & to_hstring(v_check) ;
+        report "Reference : " & v_round & " - " & to_hstring(v_check) ;
       end loop;
 
       for j in 1 to c_nr loop
@@ -154,10 +180,10 @@ begin
         writeline(file_results, v_wline);
 
       end loop;
-      
-      report "Output : " & " - " & to_hstring(dat_m) ;
+
+      report "Cypher out :" & " - " & to_hstring(m_dat_tdata) ;
       swrite(v_wline, "round[14].resul ");
-      hwrite(v_wline, dat_m);
+      hwrite(v_wline, m_dat_tdata);
       writeline(file_results, v_wline);
 
     --! closing files before exiting test bench
