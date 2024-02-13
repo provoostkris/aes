@@ -18,15 +18,8 @@ echo "Remove old files"
   
 echo "Compiling design"
 
-  vcom  -quiet -work work ../vhdl/aes_pkg.vhd
-  vcom  -quiet -work work ../vhdl/galois_mul.vhd
-  vcom  -quiet -work work ../vhdl/sbox.vhd
-  vcom  -quiet -work work ../vhdl/trf_subbytes.vhd
-  vcom  -quiet -work work ../vhdl/trf_shiftrows.vhd
-  vcom  -quiet -work work ../vhdl/trf_mixcolumns.vhd
-  vcom  -quiet -work work ../vhdl/trf_addroundkey.vhd
-  vcom  -quiet -work work ../vhdl/key_expand.vhd
-  vcom  -quiet -work work ../vhdl/aes.vhd
+  set path_rtl "../../aes"
+  do $path_rtl/modelsim/vcom_rtl.do
 
   #vcom  -quiet -work work ../quartus/simulation/modelsim/aes.vho
 
@@ -38,6 +31,7 @@ echo "Compiling test bench"
   vcom  -2008 -quiet -work work ../bench/tb_trf_addroundkey.vhd
   vcom  -2008 -quiet -work work ../bench/tb_key_expand.vhd
   vcom  -2008 -quiet -work work ../bench/tb_aes.vhd
+  vcom  -2008 -quiet -work work ../bench/tb_aes_wrap.vhd
 
 
 echo "Compilation script completed "
