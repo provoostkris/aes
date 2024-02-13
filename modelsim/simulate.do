@@ -7,7 +7,7 @@
 
 echo "start simulation"
 
-  vsim -gui -t ps -novopt work.tb_aes
+  vsim -gui -t ns -novopt work.tb_aes
 
 echo "adding waves"
 
