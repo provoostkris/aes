@@ -16,8 +16,8 @@ entity trf_shiftrows is
     clk           : in  std_logic;                --system clock
     reset_n       : in  std_logic;                --active low reset
 
-    shiftrows_s   : in  std_logic_vector(0 to c_seq-1);
-    shiftrows_m   : out std_logic_vector(0 to c_seq-1)
+    s_shiftrows_tdata   : in  std_logic_vector(0 to c_seq-1);
+    m_shiftrows_tdata   : out std_logic_vector(0 to c_seq-1)
   );
 end trf_shiftrows;
 
@@ -33,7 +33,7 @@ begin
 
 
 --! map input slv to 'input bytes'
-in_bytes_i  <= f_slv_to_bytes(shiftrows_s);
+in_bytes_i  <= f_slv_to_bytes(s_shiftrows_tdata);
 
 --! map input to state matrix
 state_s_i <= f_bytes_to_state(in_bytes_i);
@@ -71,6 +71,6 @@ state_s_i <= f_bytes_to_state(in_bytes_i);
 out_bytes_i <= f_state_to_bytes(state_m_i);
 
 --! map 'output bytes' to slv
-shiftrows_m  <= f_bytes_to_slv(out_bytes_i);
+m_shiftrows_tdata  <= f_bytes_to_slv(out_bytes_i);
 
 end rtl;

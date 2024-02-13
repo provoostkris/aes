@@ -16,10 +16,10 @@ entity trf_mixcolumns is
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
 
-    round_s       : in  integer range 1 to c_nr;
+    s_round_tdata       : in  integer range 1 to c_nr;
 
-    mixcolumns_s  : in  std_logic_vector(0 to c_seq-1);
-    mixcolumns_m  : out std_logic_vector(0 to c_seq-1)
+    s_mixcolumns_tdata  : in  std_logic_vector(0 to c_seq-1);
+    m_mixcolumns_tdata  : out std_logic_vector(0 to c_seq-1)
   );
 end trf_mixcolumns;
 
@@ -38,7 +38,7 @@ architecture rtl of trf_mixcolumns is
 begin
 
 --! map input slv to 'input bytes'
-in_bytes_i  <= f_slv_to_bytes(mixcolumns_s);
+in_bytes_i  <= f_slv_to_bytes(s_mixcolumns_tdata);
 
 --! create array which is the input bytes multiplied in galois by 2 or 3
 gen_mul_states: for j in 0 to c_arr-1 generate
@@ -106,6 +106,6 @@ end generate;
 
 --! map 'output bytes' to slv
 --! note that in the last round the mixcolumns function is disabled as per FIPS standard
-mixcolumns_m  <= f_bytes_to_slv(out_bytes_i) when round_s < c_nr else mixcolumns_s;
+m_mixcolumns_tdata  <= f_bytes_to_slv(out_bytes_i) when s_round_tdata < c_nr else s_mixcolumns_tdata;
 
 end rtl;

@@ -29,8 +29,8 @@ signal rst_n        : std_ulogic ;
 
 --! DUT ports
 
-signal subbytes_s    : std_logic_vector(0 to c_seq-1);
-signal subbytes_m    : std_logic_vector(0 to c_seq-1);
+signal s_subbytes_tdata    : std_logic_vector(0 to c_seq-1);
+signal m_subbytes_tdata    : std_logic_vector(0 to c_seq-1);
 
 --! procedures
 procedure proc_wait_clk
@@ -53,8 +53,8 @@ dut: entity work.trf_subbytes(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		subbytes_s        => subbytes_s,
-    subbytes_m        => subbytes_m
+		s_subbytes_tdata        => s_subbytes_tdata,
+    m_subbytes_tdata        => m_subbytes_tdata
   );
 
 
@@ -74,13 +74,13 @@ dut: entity work.trf_subbytes(rtl)
 	begin
 
 	  report " RUN TST.00 ";
-	    subbytes_s     <= ( others => '0');
+	    s_subbytes_tdata     <= ( others => '0');
 	    proc_reset(3);
 	    proc_wait_clk(2);
 
 	  report " RUN TST.01 ";
 			for k in 0 to c_seq/8-1 loop
-	    	 subbytes_s(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(k,8)) ;
+	    	 s_subbytes_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(k,8)) ;
 		  end loop;
 	    proc_reset(3);
 	    proc_wait_clk(2);

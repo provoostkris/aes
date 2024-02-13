@@ -35,8 +35,8 @@ signal rst_n        : std_ulogic ;
 
 --! DUT ports
 
-signal keyexpand_s    : std_logic_vector(0 to c_key-1);
-signal keyexpand_m    : t_raw_words ( 0    to c_nb*(c_nr+1)-1);
+signal s_keyexpand_tdata    : std_logic_vector(0 to c_key-1);
+signal m_keyexpand_tdata    : t_raw_words ( 0    to c_nb*(c_nr+1)-1);
 
 --! procedures
 procedure proc_wait_clk
@@ -59,8 +59,8 @@ dut: entity work.key_expand(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		keyexpand_s        => keyexpand_s,
-    keyexpand_m        => keyexpand_m
+		s_keyexpand_tdata        => s_keyexpand_tdata,
+    m_keyexpand_tdata        => m_keyexpand_tdata
   );
 
 
@@ -80,13 +80,13 @@ dut: entity work.key_expand(rtl)
 	begin
 
 	  report " RUN TST.00 ";
-	    keyexpand_s     <= ( others => '0');
+	    s_keyexpand_tdata     <= ( others => '0');
 	    proc_reset(3);
 	    proc_wait_clk(10);
 
 	  report " RUN TST.01 ";
 			for k in 0 to c_key/8-1 loop
-	    	 keyexpand_s(k*8+0 to k*8+7)  <= c_cypher_key(k) ;
+	    	 s_keyexpand_tdata(k*8+0 to k*8+7)  <= c_cypher_key(k) ;
 		  end loop;
 	    proc_reset(3);
 	    proc_wait_clk(10);

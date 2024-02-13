@@ -90,11 +90,11 @@ begin
 	--! run test bench
 	p_run: process
 
-    alias alias_start : t_round_vec(0 to c_nr) is << signal .tb_aes.dut.subbytes_s    : t_round_vec(0 to c_nr) >> ;
-    alias alias_s_box : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.subbytes_m    : t_round_vec(1 to c_nr) >> ;
-    alias alias_s_row : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.shiftrows_m   : t_round_vec(1 to c_nr) >> ;
-    alias alias_m_col : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.mixcolumns_m  : t_round_vec(1 to c_nr) >> ;
-    alias alias_k_sch : t_round_vec(0 to c_nr) is << signal .tb_aes.dut.roundkey_s    : t_round_vec(0 to c_nr) >> ;
+    alias alias_start : t_round_vec(0 to c_nr) is << signal .tb_aes.dut.s_subbytes_tdata    : t_round_vec(0 to c_nr) >> ;
+    alias alias_s_box : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.m_subbytes_tdata    : t_round_vec(1 to c_nr) >> ;
+    alias alias_s_row : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.m_shiftrows_tdata   : t_round_vec(1 to c_nr) >> ;
+    alias alias_m_col : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.m_mixcolumns_tdata  : t_round_vec(1 to c_nr) >> ;
+    alias alias_k_sch : t_round_vec(0 to c_nr) is << signal .tb_aes.dut.s_roundkey_tdata    : t_round_vec(0 to c_nr) >> ;
 
     variable v_rline     : line;
     variable v_wline     : line;

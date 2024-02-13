@@ -29,8 +29,8 @@ signal rst_n        : std_ulogic ;
 
 --! DUT ports
 
-signal mixcolumns_s    : std_logic_vector(0 to c_seq-1);
-signal mixcolumns_m    : std_logic_vector(0 to c_seq-1);
+signal s_mixcolumns_tdata    : std_logic_vector(0 to c_seq-1);
+signal m_mixcolumns_tdata    : std_logic_vector(0 to c_seq-1);
 
 --! procedures
 procedure proc_wait_clk
@@ -53,10 +53,10 @@ dut: entity work.trf_mixcolumns(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		round_s           => 1,
+		s_round_tdata           => 1,
 
-		mixcolumns_s      => mixcolumns_s,
-    mixcolumns_m      => mixcolumns_m
+		s_mixcolumns_tdata      => s_mixcolumns_tdata,
+    m_mixcolumns_tdata      => m_mixcolumns_tdata
   );
 
 
@@ -76,20 +76,20 @@ dut: entity work.trf_mixcolumns(rtl)
 	begin
 
 	  report " RUN TST.00 ";
-	    mixcolumns_s     <= ( others => '0');
+	    s_mixcolumns_tdata     <= ( others => '0');
 	    proc_reset(3);
 	    proc_wait_clk(10);
 
 	  report " RUN TST.01 ";
 			for k in 0 to c_arr-1 loop
-	    	 mixcolumns_s(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(1,8)) ;
+	    	 s_mixcolumns_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(1,8)) ;
 		  end loop;
 	    proc_reset(3);
 	    proc_wait_clk(10);
 
 	  report " RUN TST.02 ";
 			for k in 0 to c_arr-1 loop
-	    	 mixcolumns_s(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(198,8)) ;
+	    	 s_mixcolumns_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(198,8)) ;
 		  end loop;
 	    proc_reset(3);
 	    proc_wait_clk(10);
@@ -106,25 +106,25 @@ dut: entity work.trf_mixcolumns(rtl)
       -- 2d 26 31 4c	4d 7e bd f8	  45 38 49 76	    77 126 189 248
 
 			for k in 0 to c_arr-1 loop
-        if k = 0  then mixcolumns_s(k*8+0 to k*8+7)  <= x"db" ; end if;
-        if k = 1  then mixcolumns_s(k*8+0 to k*8+7)  <= x"13" ; end if;
-        if k = 2  then mixcolumns_s(k*8+0 to k*8+7)  <= x"53" ; end if;
-        if k = 3  then mixcolumns_s(k*8+0 to k*8+7)  <= x"45" ; end if;
+        if k = 0  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"db" ; end if;
+        if k = 1  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"13" ; end if;
+        if k = 2  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"53" ; end if;
+        if k = 3  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"45" ; end if;
 
-        if k = 4  then mixcolumns_s(k*8+0 to k*8+7)  <= x"f2" ; end if;
-        if k = 5  then mixcolumns_s(k*8+0 to k*8+7)  <= x"0a" ; end if;
-        if k = 6  then mixcolumns_s(k*8+0 to k*8+7)  <= x"22" ; end if;
-        if k = 7  then mixcolumns_s(k*8+0 to k*8+7)  <= x"5c" ; end if;
+        if k = 4  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"f2" ; end if;
+        if k = 5  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"0a" ; end if;
+        if k = 6  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"22" ; end if;
+        if k = 7  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"5c" ; end if;
 
-        if k = 8  then mixcolumns_s(k*8+0 to k*8+7)  <= x"d4" ; end if;
-        if k = 9  then mixcolumns_s(k*8+0 to k*8+7)  <= x"d4" ; end if;
-        if k = 10 then mixcolumns_s(k*8+0 to k*8+7)  <= x"d4" ; end if;
-        if k = 11 then mixcolumns_s(k*8+0 to k*8+7)  <= x"d5" ; end if;
+        if k = 8  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"d4" ; end if;
+        if k = 9  then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"d4" ; end if;
+        if k = 10 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"d4" ; end if;
+        if k = 11 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"d5" ; end if;
 
-        if k = 12 then mixcolumns_s(k*8+0 to k*8+7)  <= x"2d" ; end if;
-        if k = 13 then mixcolumns_s(k*8+0 to k*8+7)  <= x"26" ; end if;
-        if k = 14 then mixcolumns_s(k*8+0 to k*8+7)  <= x"31" ; end if;
-        if k = 15 then mixcolumns_s(k*8+0 to k*8+7)  <= x"4c" ; end if;
+        if k = 12 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"2d" ; end if;
+        if k = 13 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"26" ; end if;
+        if k = 14 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"31" ; end if;
+        if k = 15 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"4c" ; end if;
 		  end loop;
 
 	    proc_reset(3);

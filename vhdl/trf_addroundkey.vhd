@@ -16,9 +16,9 @@ entity trf_addroundkey is
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
 
-    addroundkey_s  : in  std_logic_vector(0 to c_seq-1);
-    roundkey_s     : in  std_logic_vector(0 to c_seq-1);
-    addroundkey_m  : out std_logic_vector(0 to c_seq-1)
+    s_addroundkey_tdata  : in  std_logic_vector(0 to c_seq-1);
+    s_roundkey_tdata     : in  std_logic_vector(0 to c_seq-1);
+    m_addroundkey_tdata  : out std_logic_vector(0 to c_seq-1)
   );
 end trf_addroundkey;
 
@@ -38,8 +38,8 @@ begin
         in_bytes_i           <= ( others => ( others => '0'));
         in_bytes_roundkey_i  <= ( others => ( others => '0'));
       elsif rising_edge(clk) then
-        in_bytes_i           <= f_slv_to_bytes(addroundkey_s);
-        in_bytes_roundkey_i  <= f_slv_to_bytes(roundkey_s);
+        in_bytes_i           <= f_slv_to_bytes(s_addroundkey_tdata);
+        in_bytes_roundkey_i  <= f_slv_to_bytes(s_roundkey_tdata);
       end if;
   end process;
 
@@ -56,6 +56,6 @@ begin
   end process;
 
 --! map 'output bytes' to slv
-addroundkey_m   <= f_bytes_to_slv(out_bytes_i);
+m_addroundkey_tdata   <= f_bytes_to_slv(out_bytes_i);
 
 end rtl;

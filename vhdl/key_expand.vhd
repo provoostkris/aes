@@ -16,8 +16,8 @@ entity key_expand is
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
 
-    keyexpand_s   : in  std_logic_vector(0 to c_key-1);
-    keyexpand_m   : out t_raw_words ( 0 to c_nb*(c_nr+1)-1)
+    s_keyexpand_tdata   : in  std_logic_vector(0 to c_key-1);
+    m_keyexpand_tdata   : out t_raw_words ( 0 to c_nb*(c_nr+1)-1)
   );
 end key_expand;
 
@@ -39,7 +39,7 @@ begin
       if reset_n='0' then
         in_words_i  <= ( others => ( others => '0'));
       elsif rising_edge(clk) then
-        in_words_i  <= f_slv_to_words(keyexpand_s);
+        in_words_i  <= f_slv_to_words(s_keyexpand_tdata);
       end if;
   end process;
 
@@ -63,12 +63,12 @@ end generate;
   -- process(reset_n, clk) is
   -- begin
       -- if reset_n='0' then
-        -- keyexpand_m  <= ( others => ( others => '0'));
+        -- m_keyexpand_tdata  <= ( others => ( others => '0'));
       -- elsif rising_edge(clk) then
-        -- keyexpand_m  <= round_keys_i;
+        -- m_keyexpand_tdata  <= round_keys_i;
       -- end if;
   -- end process;
   
-        keyexpand_m  <= round_keys_i;
+        m_keyexpand_tdata  <= round_keys_i;
 
 end rtl;

@@ -16,8 +16,8 @@ entity trf_subbytes is
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
 
-    subbytes_s    : in  std_logic_vector(0 to c_seq-1);
-    subbytes_m    : out std_logic_vector(0 to c_seq-1)
+    s_subbytes_tdata    : in  std_logic_vector(0 to c_seq-1);
+    m_subbytes_tdata    : out std_logic_vector(0 to c_seq-1)
   );
 end trf_subbytes;
 
@@ -35,7 +35,7 @@ begin
       if reset_n='0' then
         in_bytes_i  <= ( others => ( others => '0'));
       elsif rising_edge(clk) then
-        in_bytes_i  <= f_slv_to_bytes(subbytes_s);
+        in_bytes_i  <= f_slv_to_bytes(s_subbytes_tdata);
       end if;
   end process;
 
@@ -52,9 +52,9 @@ end generate;
   process(reset_n, clk) is
   begin
       if reset_n='0' then
-        subbytes_m  <= ( others => '0');
+        m_subbytes_tdata  <= ( others => '0');
       elsif rising_edge(clk) then
-        subbytes_m  <= f_bytes_to_slv(out_bytes_i);
+        m_subbytes_tdata  <= f_bytes_to_slv(out_bytes_i);
       end if;
   end process;
 
