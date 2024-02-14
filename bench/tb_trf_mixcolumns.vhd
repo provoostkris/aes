@@ -28,9 +28,14 @@ signal rst          : std_ulogic :='0';
 signal rst_n        : std_ulogic ;
 
 --! DUT ports
-
+signal s_mixcolumns_tready   : std_logic;
 signal s_mixcolumns_tdata    : std_logic_vector(0 to c_seq-1);
+signal s_mixcolumns_tlast    : std_logic;
+signal s_mixcolumns_tvalid   : std_logic;
+signal m_mixcolumns_tready   : std_logic;
 signal m_mixcolumns_tdata    : std_logic_vector(0 to c_seq-1);
+signal m_mixcolumns_tlast    : std_logic;
+signal m_mixcolumns_tvalid   : std_logic;
 
 --! procedures
 procedure proc_wait_clk
@@ -53,10 +58,17 @@ dut: entity work.trf_mixcolumns(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		s_round_tdata           => 1,
+		round                   => 1,
 
-		s_mixcolumns_tdata      => s_mixcolumns_tdata,
-    m_mixcolumns_tdata      => m_mixcolumns_tdata
+    s_mixcolumns_tready => s_mixcolumns_tready,
+    s_mixcolumns_tdata  => s_mixcolumns_tdata,
+    s_mixcolumns_tlast  => s_mixcolumns_tlast,
+    s_mixcolumns_tvalid => s_mixcolumns_tvalid,
+
+    m_mixcolumns_tready => m_mixcolumns_tready,
+    m_mixcolumns_tdata  => m_mixcolumns_tdata,
+    m_mixcolumns_tlast  => m_mixcolumns_tlast,
+    m_mixcolumns_tvalid => m_mixcolumns_tvalid
   );
 
 

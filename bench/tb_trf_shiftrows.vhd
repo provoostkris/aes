@@ -28,9 +28,14 @@ signal rst          : std_ulogic :='0';
 signal rst_n        : std_ulogic ;
 
 --! DUT ports
-
+signal s_shiftrows_tready   : std_logic;
 signal s_shiftrows_tdata    : std_logic_vector(0 to c_seq-1);
+signal s_shiftrows_tlast    : std_logic;
+signal s_shiftrows_tvalid   : std_logic;
+signal m_shiftrows_tready   : std_logic;
 signal m_shiftrows_tdata    : std_logic_vector(0 to c_seq-1);
+signal m_shiftrows_tlast    : std_logic;
+signal m_shiftrows_tvalid   : std_logic;
 
 --! procedures
 procedure proc_wait_clk
@@ -53,8 +58,15 @@ dut: entity work.trf_shiftrows(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		s_shiftrows_tdata        => s_shiftrows_tdata,
-    m_shiftrows_tdata        => m_shiftrows_tdata
+    s_shiftrows_tready => s_shiftrows_tready,
+    s_shiftrows_tdata  => s_shiftrows_tdata,
+    s_shiftrows_tlast  => s_shiftrows_tlast,
+    s_shiftrows_tvalid => s_shiftrows_tvalid,
+
+    m_shiftrows_tready => m_shiftrows_tready,
+    m_shiftrows_tdata  => m_shiftrows_tdata,
+    m_shiftrows_tlast  => m_shiftrows_tlast,
+    m_shiftrows_tvalid => m_shiftrows_tvalid
   );
 
 

@@ -16,9 +16,20 @@ entity trf_addroundkey is
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
 
-    s_addroundkey_tdata  : in  std_logic_vector(0 to c_seq-1);
-    s_roundkey_tdata     : in  std_logic_vector(0 to c_seq-1);
-    m_addroundkey_tdata  : out std_logic_vector(0 to c_seq-1)
+    s_addroundkey_tready  : out std_logic;
+    s_addroundkey_tdata   : in  std_logic_vector(0 to c_seq-1);
+    s_addroundkey_tlast   : in  std_logic;
+    s_addroundkey_tvalid  : in  std_logic;
+
+    s_roundkey_tready     : out std_logic;
+    s_roundkey_tdata      : in  std_logic_vector(0 to c_seq-1);
+    s_roundkey_tlast      : in  std_logic;
+    s_roundkey_tvalid     : in  std_logic;
+
+    m_addroundkey_tready  : in  std_logic;
+    m_addroundkey_tdata   : out std_logic_vector(0 to c_seq-1);
+    m_addroundkey_tlast   : out std_logic;
+    m_addroundkey_tvalid  : out std_logic
   );
 end trf_addroundkey;
 

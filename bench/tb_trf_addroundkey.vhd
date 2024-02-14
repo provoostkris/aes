@@ -28,10 +28,18 @@ signal rst          : std_ulogic :='0';
 signal rst_n        : std_ulogic ;
 
 --! DUT ports
-
+signal s_addroundkey_tready   : std_logic;
 signal s_addroundkey_tdata    : std_logic_vector(0 to c_seq-1);
+signal s_addroundkey_tlast    : std_logic;
+signal s_addroundkey_tvalid   : std_logic;
+signal s_roundkey_tready      : std_logic;
 signal s_roundkey_tdata       : std_logic_vector(0 to c_seq-1);
+signal s_roundkey_tlast       : std_logic;
+signal s_roundkey_tvalid      : std_logic;
+signal m_addroundkey_tready   : std_logic;
 signal m_addroundkey_tdata    : std_logic_vector(0 to c_seq-1);
+signal m_addroundkey_tlast    : std_logic;
+signal m_addroundkey_tvalid   : std_logic;
 
 --! procedures
 procedure proc_wait_clk
@@ -54,9 +62,20 @@ dut: entity work.trf_addroundkey(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		s_addroundkey_tdata        => s_addroundkey_tdata,
-		s_roundkey_tdata           => s_roundkey_tdata,
-    m_addroundkey_tdata        => m_addroundkey_tdata
+    s_addroundkey_tready => s_addroundkey_tready,
+    s_addroundkey_tdata  => s_addroundkey_tdata,
+    s_addroundkey_tlast  => s_addroundkey_tlast,
+    s_addroundkey_tvalid => s_addroundkey_tvalid,
+
+    s_roundkey_tready    => s_roundkey_tready,
+    s_roundkey_tdata     => s_roundkey_tdata,
+    s_roundkey_tlast     => s_roundkey_tlast,
+    s_roundkey_tvalid    => s_roundkey_tvalid,
+
+    m_addroundkey_tready => m_addroundkey_tready,
+    m_addroundkey_tdata  => m_addroundkey_tdata,
+    m_addroundkey_tlast  => m_addroundkey_tlast,
+    m_addroundkey_tvalid => m_addroundkey_tvalid
   );
 
 

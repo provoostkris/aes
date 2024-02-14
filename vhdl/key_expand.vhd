@@ -15,9 +15,16 @@ entity key_expand is
   port(
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
-
+    
+    s_keyexpand_tready  : out std_logic;
     s_keyexpand_tdata   : in  std_logic_vector(0 to c_key-1);
-    m_keyexpand_tdata   : out t_raw_words ( 0 to c_nb*(c_nr+1)-1)
+    s_keyexpand_tlast   : in  std_logic;
+    s_keyexpand_tvalid  : in  std_logic;
+    
+    m_keyexpand_tready  : in  std_logic;
+    m_keyexpand_tdata   : out t_raw_words ( 0 to c_nb*(c_nr+1)-1);
+    m_keyexpand_tlast   : out std_logic;
+    m_keyexpand_tvalid  : out std_logic
   );
 end key_expand;
 
@@ -33,13 +40,18 @@ architecture rtl of key_expand is
 
 begin
 
+  --! map flow control signals
+  s_keyexpand_tready <= '1';
+
 --! map input slv to 'input bytes'
   process(reset_n, clk) is
   begin
       if reset_n='0' then
         in_words_i  <= ( others => ( others => '0'));
       elsif rising_edge(clk) then
+      -- if s_keyexpand_tvalid = '1' then
         in_words_i  <= f_slv_to_words(s_keyexpand_tdata);
+      -- end if;
       end if;
   end process;
 
@@ -69,6 +81,18 @@ end generate;
       -- end if;
   -- end process;
   
-        m_keyexpand_tdata  <= round_keys_i;
+  process(reset_n, clk) is
+  begin
+      if reset_n='0' then
+        m_keyexpand_tvalid  <= '0';
+        m_keyexpand_tlast   <= '0';
+      elsif rising_edge(clk) then
+        m_keyexpand_tvalid <= s_keyexpand_tvalid;
+        m_keyexpand_tlast  <= s_keyexpand_tlast;
+      end if;
+  end process;
+  
+  m_keyexpand_tdata  <= round_keys_i;
+        
 
 end rtl;

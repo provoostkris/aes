@@ -16,10 +16,17 @@ entity trf_mixcolumns is
     clk           : in  std_logic;                    --system clock
     reset_n       : in  std_logic;                    --active low reset
 
-    s_round_tdata       : in  integer range 1 to c_nr;
+    round                   : in  integer range 1 to c_nr;
 
-    s_mixcolumns_tdata  : in  std_logic_vector(0 to c_seq-1);
-    m_mixcolumns_tdata  : out std_logic_vector(0 to c_seq-1)
+    s_mixcolumns_tready     : out std_logic;
+    s_mixcolumns_tdata      : in  std_logic_vector(0 to c_seq-1);
+    s_mixcolumns_tlast      : in  std_logic;
+    s_mixcolumns_tvalid     : in  std_logic;
+
+    m_mixcolumns_tready     : in  std_logic;
+    m_mixcolumns_tdata      : out std_logic_vector(0 to c_seq-1);
+    m_mixcolumns_tlast      : out std_logic;
+    m_mixcolumns_tvalid     : out std_logic
   );
 end trf_mixcolumns;
 
@@ -106,6 +113,6 @@ end generate;
 
 --! map 'output bytes' to slv
 --! note that in the last round the mixcolumns function is disabled as per FIPS standard
-m_mixcolumns_tdata  <= f_bytes_to_slv(out_bytes_i) when s_round_tdata < c_nr else s_mixcolumns_tdata;
+m_mixcolumns_tdata  <= f_bytes_to_slv(out_bytes_i) when round < c_nr else s_mixcolumns_tdata;
 
 end rtl;

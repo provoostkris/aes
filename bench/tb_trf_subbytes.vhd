@@ -28,9 +28,14 @@ signal rst          : std_ulogic :='0';
 signal rst_n        : std_ulogic ;
 
 --! DUT ports
-
+signal s_subbytes_tready   : std_logic;
 signal s_subbytes_tdata    : std_logic_vector(0 to c_seq-1);
+signal s_subbytes_tlast    : std_logic;
+signal s_subbytes_tvalid   : std_logic;
+signal m_subbytes_tready   : std_logic;
 signal m_subbytes_tdata    : std_logic_vector(0 to c_seq-1);
+signal m_subbytes_tlast    : std_logic;
+signal m_subbytes_tvalid   : std_logic;
 
 --! procedures
 procedure proc_wait_clk
@@ -53,8 +58,15 @@ dut: entity work.trf_subbytes(rtl)
     clk               => clk,
     reset_n           => rst_n,
 
-		s_subbytes_tdata        => s_subbytes_tdata,
-    m_subbytes_tdata        => m_subbytes_tdata
+    s_subbytes_tready => s_subbytes_tready,
+    s_subbytes_tdata  => s_subbytes_tdata,
+    s_subbytes_tlast  => s_subbytes_tlast,
+    s_subbytes_tvalid => s_subbytes_tvalid,
+
+    m_subbytes_tready => m_subbytes_tready,
+    m_subbytes_tdata  => m_subbytes_tdata,
+    m_subbytes_tlast  => m_subbytes_tlast,
+    m_subbytes_tvalid => m_subbytes_tvalid
   );
 
 

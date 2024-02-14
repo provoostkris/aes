@@ -37,21 +37,54 @@ end;
 architecture rtl of aes is
 
 -- local signals
-signal s_keyexpand_tdata    : std_logic_vector(0 to c_key-1);
-signal m_keyexpand_tdata    : t_raw_words ( 0    to c_nb*(c_nr+1)-1);
+signal s_keyexpand_tready    : std_logic;
+signal s_keyexpand_tdata     : std_logic_vector(0 to c_key-1);
+signal s_keyexpand_tlast     : std_logic;
+signal s_keyexpand_tvalid    : std_logic;
+signal m_keyexpand_tready    : std_logic;
+signal m_keyexpand_tdata     : t_raw_words ( 0    to c_nb*(c_nr+1)-1);
+signal m_keyexpand_tlast     : std_logic;
+signal m_keyexpand_tvalid    : std_logic;
 
+signal s_subbytes_tready    : std_logic_vector(0 to c_nr);
 signal s_subbytes_tdata     : t_round_vec(0 to c_nr);
+signal s_subbytes_tlast     : std_logic_vector(0 to c_nr);
+signal s_subbytes_tvalid    : std_logic_vector(0 to c_nr);
+signal m_subbytes_tready    : std_logic_vector(1 to c_nr);
 signal m_subbytes_tdata     : t_round_vec(1 to c_nr);
+signal m_subbytes_tlast     : std_logic_vector(1 to c_nr);
+signal m_subbytes_tvalid    : std_logic_vector(1 to c_nr);
 
-signal s_shiftrows_tdata    : t_round_vec(1 to c_nr);
-signal m_shiftrows_tdata    : t_round_vec(1 to c_nr);
+signal s_shiftrows_tready    : std_logic_vector(1 to c_nr);
+signal s_shiftrows_tdata     : t_round_vec(1 to c_nr);
+signal s_shiftrows_tlast     : std_logic_vector(1 to c_nr);
+signal s_shiftrows_tvalid    : std_logic_vector(1 to c_nr);
+signal m_shiftrows_tready    : std_logic_vector(1 to c_nr);
+signal m_shiftrows_tdata     : t_round_vec(1 to c_nr);
+signal m_shiftrows_tlast     : std_logic_vector(1 to c_nr);
+signal m_shiftrows_tvalid    : std_logic_vector(1 to c_nr);
 
-signal s_mixcolumns_tdata   : t_round_vec(1 to c_nr);
-signal m_mixcolumns_tdata   : t_round_vec(1 to c_nr);
+signal s_mixcolumns_tready    : std_logic_vector(1 to c_nr);
+signal s_mixcolumns_tdata     : t_round_vec(1 to c_nr);
+signal s_mixcolumns_tlast     : std_logic_vector(1 to c_nr);
+signal s_mixcolumns_tvalid    : std_logic_vector(1 to c_nr);
+signal m_mixcolumns_tready    : std_logic_vector(1 to c_nr);
+signal m_mixcolumns_tdata     : t_round_vec(1 to c_nr);
+signal m_mixcolumns_tlast     : std_logic_vector(1 to c_nr);
+signal m_mixcolumns_tvalid    : std_logic_vector(1 to c_nr);
 
-signal s_addroundkey_tdata  : t_round_vec(1 to c_nr);
-signal s_roundkey_tdata     : t_round_vec(0 to c_nr);
-signal m_addroundkey_tdata  : t_round_vec(0 to c_nr);
+signal s_addroundkey_tready    : std_logic_vector(1 to c_nr);
+signal s_addroundkey_tdata     : t_round_vec(1 to c_nr);
+signal s_addroundkey_tlast     : std_logic_vector(1 to c_nr);
+signal s_addroundkey_tvalid    : std_logic_vector(1 to c_nr);
+signal s_roundkey_tready       : std_logic_vector(0 to c_nr);
+signal s_roundkey_tdata        : t_round_vec(0 to c_nr);
+signal s_roundkey_tlast        : std_logic_vector(0 to c_nr);
+signal s_roundkey_tvalid       : std_logic_vector(0 to c_nr);
+signal m_addroundkey_tready    : std_logic_vector(0 to c_nr);
+signal m_addroundkey_tdata     : t_round_vec(0 to c_nr);
+signal m_addroundkey_tlast     : std_logic_vector(0 to c_nr);
+signal m_addroundkey_tvalid    : std_logic_vector(0 to c_nr);
 
 begin
 
@@ -71,16 +104,23 @@ begin
       clk               => clk,
       reset_n           => rst_n,
 
-      s_keyexpand_tdata        => s_keyexpand_tdata,
-      m_keyexpand_tdata        => m_keyexpand_tdata
+      s_keyexpand_tready => s_keyexpand_tready,
+      s_keyexpand_tdata  => s_keyexpand_tdata ,
+      s_keyexpand_tlast  => s_keyexpand_tlast ,
+      s_keyexpand_tvalid => s_keyexpand_tvalid,
+
+      m_keyexpand_tready => m_keyexpand_tready,
+      m_keyexpand_tdata  => m_keyexpand_tdata ,
+      m_keyexpand_tlast  => m_keyexpand_tlast ,
+      m_keyexpand_tvalid => m_keyexpand_tvalid
     );
 
   -- assign round keys
   gen_keys:  for j in 0 to c_nr generate
     s_roundkey_tdata(j)   <=  m_keyexpand_tdata(j*4+0) &
-                        m_keyexpand_tdata(j*4+1) &
-                        m_keyexpand_tdata(j*4+2) &
-                        m_keyexpand_tdata(j*4+3);
+                              m_keyexpand_tdata(j*4+1) &
+                              m_keyexpand_tdata(j*4+2) &
+                              m_keyexpand_tdata(j*4+3);
   end generate;
 
 --! Cypher step 1 add round key
@@ -89,9 +129,20 @@ begin
       clk               => clk,
       reset_n           => rst_n,
 
-      s_addroundkey_tdata     => s_subbytes_tdata(0),
-      s_roundkey_tdata        => s_roundkey_tdata(0),
-      m_addroundkey_tdata     => m_addroundkey_tdata(0)
+      s_addroundkey_tready => s_subbytes_tready(0),
+      s_addroundkey_tdata  => s_subbytes_tdata(0),
+      s_addroundkey_tlast  => s_subbytes_tlast(0),
+      s_addroundkey_tvalid => s_subbytes_tvalid(0),
+
+      s_roundkey_tready    => s_roundkey_tready(0),
+      s_roundkey_tdata     => s_roundkey_tdata(0),
+      s_roundkey_tlast     => s_roundkey_tlast(0),
+      s_roundkey_tvalid    => s_roundkey_tvalid(0),
+
+      m_addroundkey_tready => m_addroundkey_tready(0),
+      m_addroundkey_tdata  => m_addroundkey_tdata(0),
+      m_addroundkey_tlast  => m_addroundkey_tlast(0),
+      m_addroundkey_tvalid => m_addroundkey_tvalid(0)
     );
 
 
@@ -105,8 +156,15 @@ gen_rounds:  for j in 1 to c_nr generate
       clk               => clk,
       reset_n           => rst_n,
 
-      s_subbytes_tdata        => s_subbytes_tdata(j),
-      m_subbytes_tdata        => m_subbytes_tdata(j)
+      s_subbytes_tready => s_subbytes_tready(j),
+      s_subbytes_tdata  => s_subbytes_tdata(j),
+      s_subbytes_tlast  => s_subbytes_tlast(j),
+      s_subbytes_tvalid => s_subbytes_tvalid(j),
+
+      m_subbytes_tready => m_subbytes_tready(j),
+      m_subbytes_tdata  => m_subbytes_tdata(j),
+      m_subbytes_tlast  => m_subbytes_tlast(j),
+      m_subbytes_tvalid => m_subbytes_tvalid(j)
     );
 
   s_shiftrows_tdata(j) <= m_subbytes_tdata(j);
@@ -116,8 +174,15 @@ gen_rounds:  for j in 1 to c_nr generate
       clk               => clk,
       reset_n           => rst_n,
 
-      s_shiftrows_tdata       => s_shiftrows_tdata(j),
-      m_shiftrows_tdata       => m_shiftrows_tdata(j)
+      s_shiftrows_tready => s_shiftrows_tready(j),
+      s_shiftrows_tdata  => s_shiftrows_tdata(j),
+      s_shiftrows_tlast  => s_shiftrows_tlast(j),
+      s_shiftrows_tvalid => s_shiftrows_tvalid(j),
+
+      m_shiftrows_tready => m_shiftrows_tready(j),
+      m_shiftrows_tdata  => m_shiftrows_tdata(j),
+      m_shiftrows_tlast  => m_shiftrows_tlast(j),
+      m_shiftrows_tvalid => m_shiftrows_tvalid(j)
     );
 
   s_mixcolumns_tdata(j) <= m_shiftrows_tdata(j);
@@ -127,10 +192,17 @@ gen_rounds:  for j in 1 to c_nr generate
       clk               => clk,
       reset_n           => rst_n,
 
-      s_round_tdata           => j,
+      round               => j,
 
-      s_mixcolumns_tdata      => s_mixcolumns_tdata(j),
-      m_mixcolumns_tdata      => m_mixcolumns_tdata(j)
+      s_mixcolumns_tready => s_mixcolumns_tready(j),
+      s_mixcolumns_tdata  => s_mixcolumns_tdata(j),
+      s_mixcolumns_tlast  => s_mixcolumns_tlast(j),
+      s_mixcolumns_tvalid => s_mixcolumns_tvalid(j),
+
+      m_mixcolumns_tready => m_mixcolumns_tready(j),
+      m_mixcolumns_tdata  => m_mixcolumns_tdata(j),
+      m_mixcolumns_tlast  => m_mixcolumns_tlast(j),
+      m_mixcolumns_tvalid => m_mixcolumns_tvalid(j)
     );
 
   s_addroundkey_tdata(j) <= m_mixcolumns_tdata(j);
@@ -140,9 +212,20 @@ gen_rounds:  for j in 1 to c_nr generate
       clk               => clk,
       reset_n           => rst_n,
 
-      s_addroundkey_tdata     => s_addroundkey_tdata(j),
-      s_roundkey_tdata        => s_roundkey_tdata(j),
-      m_addroundkey_tdata     => m_addroundkey_tdata(j)
+      s_addroundkey_tready => s_addroundkey_tready(j),
+      s_addroundkey_tdata  => s_addroundkey_tdata(j),
+      s_addroundkey_tlast  => s_addroundkey_tlast(j),
+      s_addroundkey_tvalid => s_addroundkey_tvalid(j),
+
+      s_roundkey_tready    => s_roundkey_tready(j),
+      s_roundkey_tdata     => s_roundkey_tdata(j),
+      s_roundkey_tlast     => s_roundkey_tlast(j),
+      s_roundkey_tvalid    => s_roundkey_tvalid(j),
+
+      m_addroundkey_tready => m_addroundkey_tready(j),
+      m_addroundkey_tdata  => m_addroundkey_tdata(j),
+      m_addroundkey_tlast  => m_addroundkey_tlast(j),
+      m_addroundkey_tvalid => m_addroundkey_tvalid(j)
     );
 
 end generate;
