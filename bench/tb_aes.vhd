@@ -17,9 +17,9 @@ library work;
 use     work.aes_pkg.all;
 
 entity tb_aes is
-	port(
-		y        :  out std_logic
-	);
+  port(
+    y        :  out std_logic
+  );
 end entity tb_aes;
 
 architecture rtl of tb_aes is
@@ -82,13 +82,23 @@ begin
     );
 
   --! clk drivers
-	clk    <= not clk  after c_clk_per/2;
+  clk    <= not clk  after c_clk_per/2;
 
   --! unused for now
   y <= 'Z';
 
-	--! run test bench
-	p_run: process
+  --! run test bench
+  p_run: process
+
+    procedure proc_reset
+      (constant cycles : in natural) is
+    begin
+       rst_n <= '0';
+       for i in 0 to cycles-1 loop
+        wait until rising_edge(clk);
+       end loop;
+       rst_n <= '1';
+    end procedure;
 
     alias alias_start : t_round_vec(0 to c_nr) is << signal .tb_aes.dut.s_subbytes_tdata    : t_round_vec(0 to c_nr) >> ;
     alias alias_s_box : t_round_vec(1 to c_nr) is << signal .tb_aes.dut.m_subbytes_tdata    : t_round_vec(1 to c_nr) >> ;
@@ -103,10 +113,10 @@ begin
     variable v_check     : std_logic_vector(c_seq-1 downto 0);
     variable v_slv_seq   : std_logic_vector(0 to c_seq-1);
 
-	begin
+  begin
 
 
-	  report " RUN TST.00 ";
+    report " RUN TST.00 ";
 
       s_key_tdata  <= ( others => '0');
       s_key_tlast  <= '0';
@@ -114,29 +124,31 @@ begin
       s_dat_tdata  <= ( others => '0');
       s_dat_tlast  <= '0';
       s_dat_tvalid <= '0';
-      rst_n <= '0';
-      proc_wait_clk(2);
-      rst_n <= '1';
-
-      proc_wait_clk(150);
+      proc_reset(3);
+      proc_wait_clk(133);
 
 
-	  report " RUN TST.01 ";
+    report " RUN TST.01 ";
 
       file_open(file_inputs, "../references/fips_197_c3.txt",  read_mode);
       file_open(file_results, "output_results.txt", write_mode);
 
+      proc_reset(3);
       s_key_tdata  <= c_ref_key;
       s_key_tlast  <= '0';
       s_key_tvalid <= '0';
       s_dat_tdata  <= c_ref_plain;
       s_dat_tlast  <= '0';
       s_dat_tvalid <= '0';
-      rst_n <= '0';
-      proc_wait_clk(2);
-      rst_n <= '1';
 
-      proc_wait_clk(150);
+      proc_wait_clk(2);
+      s_key_tvalid <= '1';
+      s_dat_tvalid <= '1';
+      proc_wait_clk(1);
+      s_key_tvalid <= '0';
+      s_dat_tvalid <= '0';
+
+      proc_wait_clk(133);
 
       while not endfile(file_inputs) loop
         readline(file_inputs, v_rline);
@@ -190,7 +202,7 @@ begin
     file_close(file_inputs);
     file_close(file_results);
 
-	  report " END of test bench" severity failure;
+    report " END of test bench" severity failure;
 
-	end process;
+  end process;
 end architecture rtl;

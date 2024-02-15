@@ -92,11 +92,19 @@ begin
 --! implementation
 --!
 
+--! map flow control signals
+  s_key_tready         <= '1';
+  s_dat_tready         <= '1';
+
   --! assign the data input to the first stage of the process
-  s_subbytes_tdata(0)   <=  s_dat_tdata;
+  s_subbytes_tdata(0)    <=  s_dat_tdata;
+  s_subbytes_tlast(0)    <=  s_dat_tlast;
+  s_subbytes_tvalid(0)   <=  s_dat_tvalid;
 
   --! assign the key to the expansion component
-  s_keyexpand_tdata     <=  s_key_tdata;
+  s_keyexpand_tdata      <=  s_key_tdata;
+  s_keyexpand_tlast      <=  s_key_tlast;
+  s_keyexpand_tvalid     <=  s_key_tvalid;
 
 --! start with the key expansion
   i_key_expand: entity work.key_expand(rtl)
@@ -121,6 +129,8 @@ begin
                               m_keyexpand_tdata(j*4+1) &
                               m_keyexpand_tdata(j*4+2) &
                               m_keyexpand_tdata(j*4+3);
+    s_roundkey_tlast(j)   <=  m_keyexpand_tlast;
+    s_roundkey_tvalid(j)  <=  m_keyexpand_tvalid;
   end generate;
 
 --! Cypher step 1 add round key
@@ -149,7 +159,9 @@ begin
 --! then cascade the four transformations for a loop of 10x/12x/14x
 gen_rounds:  for j in 1 to c_nr generate
 
-  s_subbytes_tdata(j) <= m_addroundkey_tdata(j-1);
+  s_subbytes_tdata(j ) <= m_addroundkey_tdata(j-1);
+  s_subbytes_tlast( j) <= m_addroundkey_tlast(j-1);
+  s_subbytes_tvalid(j) <= m_addroundkey_tvalid(j-1);
 
   i_trf_subbytes: entity work.trf_subbytes(rtl)
     port map (
@@ -167,7 +179,9 @@ gen_rounds:  for j in 1 to c_nr generate
       m_subbytes_tvalid => m_subbytes_tvalid(j)
     );
 
-  s_shiftrows_tdata(j) <= m_subbytes_tdata(j);
+  s_shiftrows_tdata(j)  <= m_subbytes_tdata(j);
+  s_shiftrows_tlast(j)  <= m_subbytes_tlast(j);
+  s_shiftrows_tvalid(j) <= m_subbytes_tvalid(j);
 
   i_trf_shiftrows: entity work.trf_shiftrows(rtl)
     port map (
@@ -185,7 +199,9 @@ gen_rounds:  for j in 1 to c_nr generate
       m_shiftrows_tvalid => m_shiftrows_tvalid(j)
     );
 
-  s_mixcolumns_tdata(j) <= m_shiftrows_tdata(j);
+  s_mixcolumns_tdata(j)  <= m_shiftrows_tdata(j);
+  s_mixcolumns_tlast(j)  <= m_shiftrows_tlast(j);
+  s_mixcolumns_tvalid(j) <= m_shiftrows_tvalid(j);
 
   i_trf_mixcolumns: entity work.trf_mixcolumns(rtl)
     port map (
@@ -205,7 +221,9 @@ gen_rounds:  for j in 1 to c_nr generate
       m_mixcolumns_tvalid => m_mixcolumns_tvalid(j)
     );
 
-  s_addroundkey_tdata(j) <= m_mixcolumns_tdata(j);
+  s_addroundkey_tdata(j)  <= m_mixcolumns_tdata(j);
+  s_addroundkey_tlast(j)  <= m_mixcolumns_tlast(j);
+  s_addroundkey_tvalid(j) <= m_mixcolumns_tvalid(j);
 
   i_trf_addroundkey: entity work.trf_addroundkey(rtl)
     port map (
@@ -231,6 +249,8 @@ gen_rounds:  for j in 1 to c_nr generate
 end generate;
 
 --! the output state is the result of the last transformation in the last round
-m_dat_tdata  <= m_addroundkey_tdata(c_nr);
+m_dat_tdata   <= m_addroundkey_tdata(c_nr);
+m_dat_tlast   <= m_addroundkey_tlast(c_nr);
+m_dat_tvalid  <= m_addroundkey_tvalid(c_nr);
 
 end architecture rtl;
