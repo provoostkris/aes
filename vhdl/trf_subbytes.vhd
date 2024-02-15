@@ -36,6 +36,9 @@ architecture rtl of trf_subbytes is
 
 begin
 
+--! map flow control signals
+  s_subbytes_tready <= '1';
+  
 --! map input slv to 'input bytes'
   process(reset_n, clk) is
   begin
@@ -56,6 +59,10 @@ gen_subbytes: for j in 0 to c_arr-1 generate
 end generate;
 
 --! map 'output bytes' to slv
+
+  i_shift_reg_tvalid : entity work.shift_reg(rtl) generic map (g_del => 2) port map (clk , reset_n, s_subbytes_tvalid, m_subbytes_tvalid);
+  i_shift_reg_tlast  : entity work.shift_reg(rtl) generic map (g_del => 2) port map (clk , reset_n, s_subbytes_tlast , m_subbytes_tlast);
+  
   process(reset_n, clk) is
   begin
       if reset_n='0' then

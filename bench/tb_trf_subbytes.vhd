@@ -14,9 +14,9 @@ library work;
 use     work.aes_pkg.all;
 
 entity tb_trf_subbytes is
-	port(
-		y        :  out std_logic
-	);
+  port(
+    y        :  out std_logic
+  );
 end entity tb_trf_subbytes;
 
 architecture rtl of tb_trf_subbytes is
@@ -24,15 +24,14 @@ architecture rtl of tb_trf_subbytes is
 constant c_clk_per  : time      := 20 ns ;
 
 signal clk          : std_ulogic :='0';
-signal rst          : std_ulogic :='0';
-signal rst_n        : std_ulogic ;
+signal rst_n        : std_ulogic :='0';
 
 --! DUT ports
 signal s_subbytes_tready   : std_logic;
 signal s_subbytes_tdata    : std_logic_vector(0 to c_seq-1);
 signal s_subbytes_tlast    : std_logic;
 signal s_subbytes_tvalid   : std_logic;
-signal m_subbytes_tready   : std_logic;
+signal m_subbytes_tready   : std_logic := '1';
 signal m_subbytes_tdata    : std_logic_vector(0 to c_seq-1);
 signal m_subbytes_tlast    : std_logic;
 signal m_subbytes_tvalid   : std_logic;
@@ -48,9 +47,11 @@ end procedure;
 
 begin
 
+--! unused signals
+  y <= 'Z';
+
 --! standard signals
-	clk            <= not clk  after c_clk_per/2;
-  rst_n          <= not rst;
+  clk            <= not clk  after c_clk_per/2;
 
 --! dut
 dut: entity work.trf_subbytes(rtl)
@@ -70,37 +71,43 @@ dut: entity work.trf_subbytes(rtl)
   );
 
 
-	--! run test bench
-	p_run: process
+  --! run test bench
+  p_run: process
 
-	  procedure proc_reset
-	    (constant cycles : in natural) is
-	  begin
-	     rst <= '1';
-	     for i in 0 to cycles-1 loop
-	      wait until rising_edge(clk);
-	     end loop;
-	     rst <= '0';
-	  end procedure;
+    procedure proc_reset
+      (constant cycles : in natural) is
+    begin
+       rst_n <= '0';
+       for i in 0 to cycles-1 loop
+        wait until rising_edge(clk);
+       end loop;
+       rst_n <= '1';
+    end procedure;
 
-	begin
+  begin
 
-	  report " RUN TST.00 ";
-	    s_subbytes_tdata     <= ( others => '0');
-	    proc_reset(3);
-	    proc_wait_clk(2);
+    report " RUN TST.00 ";
+      s_subbytes_tdata     <= ( others => '0');
+      s_subbytes_tlast     <= '0';
+      s_subbytes_tvalid    <= '0';
+      proc_reset(3);
+      proc_wait_clk(5);
 
-	  report " RUN TST.01 ";
-			for k in 0 to c_seq/8-1 loop
-	    	 s_subbytes_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(k,8)) ;
-		  end loop;
-	    proc_reset(3);
-	    proc_wait_clk(2);
+    report " RUN TST.01 ";
+      proc_reset(3);
+      for k in 0 to c_seq/8-1 loop
+        s_subbytes_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(k,8)) ;
+        s_subbytes_tvalid    <= '0';
+      end loop;
+      s_subbytes_tvalid    <= '1';
+      proc_wait_clk(1);
+      s_subbytes_tvalid    <= '0';
+      proc_wait_clk(10);
 
 
-	    proc_wait_clk(10);
-	  report " END of test bench" severity failure;
+      proc_wait_clk(10);
+    report " END of test bench" severity failure;
 
-	end process;
+  end process;
 
 end architecture rtl;

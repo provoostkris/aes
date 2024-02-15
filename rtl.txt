@@ -1,3 +1,4 @@
+vhdl/shift_reg.vhd
 vhdl/aes_pkg.vhd
 vhdl/galois_mul.vhd
 vhdl/key_expand.vhd

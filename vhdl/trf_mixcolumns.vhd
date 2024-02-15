@@ -44,8 +44,11 @@ architecture rtl of trf_mixcolumns is
     signal state_s_mul_3_i    : t_state_bytes ( 0 to 3);
 begin
 
+--! map flow control signals
+  s_mixcolumns_tready <= '1';
+  
 --! map input slv to 'input bytes'
-in_bytes_i  <= f_slv_to_bytes(s_mixcolumns_tdata);
+  in_bytes_i  <= f_slv_to_bytes(s_mixcolumns_tdata);
 
 --! create array which is the input bytes multiplied in galois by 2 or 3
 gen_mul_states: for j in 0 to c_arr-1 generate
@@ -113,6 +116,10 @@ end generate;
 
 --! map 'output bytes' to slv
 --! note that in the last round the mixcolumns function is disabled as per FIPS standard
-m_mixcolumns_tdata  <= f_bytes_to_slv(out_bytes_i) when round < c_nr else s_mixcolumns_tdata;
+
+  i_shift_reg_tvalid : entity work.shift_reg(rtl) generic map (g_del => 2) port map (clk , reset_n, s_mixcolumns_tvalid, m_mixcolumns_tvalid);
+  i_shift_reg_tlast  : entity work.shift_reg(rtl) generic map (g_del => 2) port map (clk , reset_n, s_mixcolumns_tlast , m_mixcolumns_tlast);
+  
+  m_mixcolumns_tdata  <= f_bytes_to_slv(out_bytes_i) when round < c_nr else s_mixcolumns_tdata;
 
 end rtl;

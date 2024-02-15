@@ -38,12 +38,14 @@ architecture rtl of trf_shiftrows is
 
 begin
 
+--! map flow control signals
+  s_shiftrows_tready <= '1';
 
 --! map input slv to 'input bytes'
-in_bytes_i  <= f_slv_to_bytes(s_shiftrows_tdata);
+  in_bytes_i  <= f_slv_to_bytes(s_shiftrows_tdata);
 
 --! map input to state matrix
-state_s_i <= f_bytes_to_state(in_bytes_i);
+  state_s_i <= f_bytes_to_state(in_bytes_i);
 
 --! perform the shift row operation
   process(reset_n, clk) is
@@ -75,9 +77,12 @@ state_s_i <= f_bytes_to_state(in_bytes_i);
   end process;
 
 --! map state matrix to output bytes
-out_bytes_i <= f_state_to_bytes(state_m_i);
+  out_bytes_i <= f_state_to_bytes(state_m_i);
 
 --! map 'output bytes' to slv
-m_shiftrows_tdata  <= f_bytes_to_slv(out_bytes_i);
+  i_shift_reg_tvalid : entity work.shift_reg(rtl) generic map (g_del => 1) port map (clk , reset_n, s_shiftrows_tvalid, m_shiftrows_tvalid);
+  i_shift_reg_tlast  : entity work.shift_reg(rtl) generic map (g_del => 1) port map (clk , reset_n, s_shiftrows_tlast , m_shiftrows_tlast);
+  
+  m_shiftrows_tdata  <= f_bytes_to_slv(out_bytes_i);
 
 end rtl;

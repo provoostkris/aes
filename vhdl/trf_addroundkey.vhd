@@ -42,6 +42,10 @@ architecture rtl of trf_addroundkey is
 
 begin
 
+--! map flow control signals
+  s_addroundkey_tready <= '1';
+  s_roundkey_tready    <= '1';
+  
 --! map input slv to 'input bytes'
   process(reset_n, clk) is
   begin
@@ -67,6 +71,10 @@ begin
   end process;
 
 --! map 'output bytes' to slv
-m_addroundkey_tdata   <= f_bytes_to_slv(out_bytes_i);
+
+  i_shift_reg_tvalid : entity work.shift_reg(rtl) generic map (g_del => 2) port map (clk , reset_n, s_addroundkey_tvalid, m_addroundkey_tvalid);
+  i_shift_reg_tlast  : entity work.shift_reg(rtl) generic map (g_del => 2) port map (clk , reset_n, s_addroundkey_tlast , m_addroundkey_tlast);
+  
+  m_addroundkey_tdata   <= f_bytes_to_slv(out_bytes_i);
 
 end rtl;

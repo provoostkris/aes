@@ -24,8 +24,7 @@ architecture rtl of tb_trf_addroundkey is
 constant c_clk_per  : time      := 20 ns ;
 
 signal clk          : std_ulogic :='0';
-signal rst          : std_ulogic :='0';
-signal rst_n        : std_ulogic ;
+signal rst_n        : std_ulogic :='0';
 
 --! DUT ports
 signal s_addroundkey_tready   : std_logic;
@@ -36,7 +35,7 @@ signal s_roundkey_tready      : std_logic;
 signal s_roundkey_tdata       : std_logic_vector(0 to c_seq-1);
 signal s_roundkey_tlast       : std_logic;
 signal s_roundkey_tvalid      : std_logic;
-signal m_addroundkey_tready   : std_logic;
+signal m_addroundkey_tready   : std_logic := '1';
 signal m_addroundkey_tdata    : std_logic_vector(0 to c_seq-1);
 signal m_addroundkey_tlast    : std_logic;
 signal m_addroundkey_tvalid   : std_logic;
@@ -52,9 +51,11 @@ end procedure;
 
 begin
 
+--! unused signals
+  y <= 'Z';
+
 --! standard signals
 	clk            <= not clk  after c_clk_per/2;
-  rst_n          <= not rst;
 
 --! dut
 dut: entity work.trf_addroundkey(rtl)
@@ -85,28 +86,39 @@ dut: entity work.trf_addroundkey(rtl)
 	  procedure proc_reset
 	    (constant cycles : in natural) is
 	  begin
-	     rst <= '1';
+	     rst_n <= '0';
 	     for i in 0 to cycles-1 loop
 	      wait until rising_edge(clk);
 	     end loop;
-	     rst <= '0';
+	     rst_n <= '1';
 	  end procedure;
 
 	begin
 
 	  report " RUN TST.00 ";
 	    s_addroundkey_tdata     <= ( others => '0');
+	    s_addroundkey_tlast     <= '0';
+	    s_addroundkey_tvalid    <= '0';
 	    s_roundkey_tdata        <= ( others => '0');
+	    s_roundkey_tlast        <= '0';
+	    s_roundkey_tvalid       <= '0';
 	    proc_reset(3);
-	    proc_wait_clk(2);
+	    proc_wait_clk(5);
 
 	  report " RUN TST.01 ";
 			for k in 0 to c_arr-1 loop
-	    	 s_addroundkey_tdata(k*8+0 to k*8+7)  <= std_logic_vector(to_unsigned(k+0,8)) ;
-	    	 s_roundkey_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(k+c_arr,8)) ;
+        s_addroundkey_tdata(k*8+0 to k*8+7)  <= std_logic_vector(to_unsigned(k+0,8)) ;
+        s_addroundkey_tlast     <= '0';
+        s_addroundkey_tvalid    <= '1';
+        s_roundkey_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(k+c_arr,8)) ;
+        s_roundkey_tlast        <= '0';
+        s_roundkey_tvalid       <= '1';
 		  end loop;
 	    proc_reset(3);
-	    proc_wait_clk(2);
+	    proc_wait_clk(1);
+	    s_addroundkey_tvalid    <= '0';
+	    s_roundkey_tvalid       <= '0';
+	    proc_wait_clk(5);
 
 
 	    proc_wait_clk(10);

@@ -24,15 +24,14 @@ architecture rtl of tb_trf_mixcolumns is
 constant c_clk_per  : time      := 20 ns ;
 
 signal clk          : std_ulogic :='0';
-signal rst          : std_ulogic :='0';
-signal rst_n        : std_ulogic ;
+signal rst_n        : std_ulogic :='0';
 
 --! DUT ports
 signal s_mixcolumns_tready   : std_logic;
 signal s_mixcolumns_tdata    : std_logic_vector(0 to c_seq-1);
 signal s_mixcolumns_tlast    : std_logic;
 signal s_mixcolumns_tvalid   : std_logic;
-signal m_mixcolumns_tready   : std_logic;
+signal m_mixcolumns_tready   : std_logic := '1';
 signal m_mixcolumns_tdata    : std_logic_vector(0 to c_seq-1);
 signal m_mixcolumns_tlast    : std_logic;
 signal m_mixcolumns_tvalid   : std_logic;
@@ -48,9 +47,11 @@ end procedure;
 
 begin
 
+--! unused signals
+  y <= 'Z';
+
 --! standard signals
 	clk            <= not clk  after c_clk_per/2;
-  rst_n          <= not rst;
 
 --! dut
 dut: entity work.trf_mixcolumns(rtl)
@@ -78,35 +79,46 @@ dut: entity work.trf_mixcolumns(rtl)
 	  procedure proc_reset
 	    (constant cycles : in natural) is
 	  begin
-	     rst <= '1';
+	     rst_n <= '0';
 	     for i in 0 to cycles-1 loop
 	      wait until rising_edge(clk);
 	     end loop;
-	     rst <= '0';
+	     rst_n <= '1';
 	  end procedure;
 
 	begin
 
 	  report " RUN TST.00 ";
 	    s_mixcolumns_tdata     <= ( others => '0');
+	    s_mixcolumns_tlast     <= '0';
+	    s_mixcolumns_tvalid    <= '0';
 	    proc_reset(3);
 	    proc_wait_clk(10);
 
 	  report " RUN TST.01 ";
-			for k in 0 to c_arr-1 loop
-	    	 s_mixcolumns_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(1,8)) ;
-		  end loop;
 	    proc_reset(3);
+			for k in 0 to c_arr-1 loop
+        s_mixcolumns_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(1,8)) ;
+        s_mixcolumns_tlast     <= '0';
+        s_mixcolumns_tvalid    <= '0';
+		  end loop;
+	    s_mixcolumns_tvalid    <= '1';
+	    proc_wait_clk(1);
+	    s_mixcolumns_tvalid    <= '0';
 	    proc_wait_clk(10);
 
 	  report " RUN TST.02 ";
+	    proc_reset(3);
 			for k in 0 to c_arr-1 loop
 	    	 s_mixcolumns_tdata(k*8+0 to k*8+7)     <= std_logic_vector(to_unsigned(198,8)) ;
 		  end loop;
-	    proc_reset(3);
+	    s_mixcolumns_tvalid    <= '1';
+	    proc_wait_clk(1);
+	    s_mixcolumns_tvalid    <= '0';
 	    proc_wait_clk(10);
 
 	  report " RUN TST.03 ";
+	    proc_reset(3);
       -- Test vectors for MixColumn()
       -- Hexadecimal	Decimal
       -- Before	      After	        Before	      After
@@ -138,8 +150,9 @@ dut: entity work.trf_mixcolumns(rtl)
         if k = 14 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"31" ; end if;
         if k = 15 then s_mixcolumns_tdata(k*8+0 to k*8+7)  <= x"4c" ; end if;
 		  end loop;
-
-	    proc_reset(3);
+	    s_mixcolumns_tvalid    <= '1';
+	    proc_wait_clk(1);
+	    s_mixcolumns_tvalid    <= '0';
 	    proc_wait_clk(10);
 
 
