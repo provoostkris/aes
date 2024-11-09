@@ -10,7 +10,7 @@ use ieee.numeric_std.all;
 -- just for random functions
 use ieee.math_real.all;
 
-use STD.textio.all;
+use std.textio.all;
 use ieee.std_logic_textio.all;
 
 library work;
@@ -47,7 +47,11 @@ architecture rtl of tb_aes is
   signal m_dat_tvalid  :  std_logic;                               --! dat output
   signal m_dat_tdata   :  std_logic_vector(c_seq-1 downto 0);
   signal m_dat_tlast   :  std_logic;
-  signal m_dat_tready  :  std_logic;
+  signal m_dat_tready  :  std_logic := '0';
+
+  type   t_rounds      is array ( integer range <> ) of std_logic_vector(c_seq-1 downto 0);
+  signal arr_ref       :  t_rounds(0 to 72);
+  signal arr_out       :  t_rounds(0 to 72);
 
   --! procedures
   procedure proc_wait_clk
@@ -112,6 +116,30 @@ begin
     variable v_round     : string(1 to 15);
     variable v_check     : std_logic_vector(c_seq-1 downto 0);
     variable v_slv_seq   : std_logic_vector(0 to c_seq-1);
+    variable v_idx       : integer range 0 to 72 := 0;
+    variable txt         : line;
+
+    procedure compare
+      (constant exp   :  std_logic_vector(c_seq-1 downto 0);
+       constant res   :  std_logic_vector(c_seq-1 downto 0)
+      ) is
+    begin
+
+      if exp = res then
+        hwrite(txt,exp);
+        write(txt, LF);
+        writeline(output , txt);
+        write(std.textio.output,"PASS " & LF);
+      else
+        hwrite(txt,exp);
+        write(txt, LF);
+        hwrite(txt,res);
+        write(txt, LF);
+        writeline(output , txt);
+        write(std.textio.output,"FAIL " & LF);
+      end if;
+
+    end procedure;
 
   begin
 
@@ -150,53 +178,114 @@ begin
 
       proc_wait_clk(133);
 
+      -- reqd the reference file
+      v_idx := 0;
       while not endfile(file_inputs) loop
         readline(file_inputs, v_rline);
         read(v_rline, v_round);
         read(v_rline, v_space);           -- read in the space character
         hread(v_rline, v_check);
-
-        report "Reference : " & v_round & " - " & to_hstring(v_check) ;
+        wait for 0 ns;
+        arr_ref(v_idx) <= v_check;
+        v_idx := v_idx + 1 ;
       end loop;
 
+      -- write an output file with the IP results
       for j in 1 to c_nr loop
 
-        v_slv_seq := alias_start(j);
-        report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
+        wait for 0 ns;
+
+        arr_out(5*j-5+0) <= alias_start(j);
+        v_slv_seq      := alias_start(j);
         swrite(v_wline, "round[" & integer'image(j) &"].start ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
-        v_slv_seq := alias_s_box(j);
-        report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
+        arr_out(5*j-5+1) <= alias_s_box(j);
+        v_slv_seq      := alias_s_box(j);
         swrite(v_wline, "round[" & integer'image(j) &"].s_box ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
-        v_slv_seq := alias_s_row(j);
-        report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
+        arr_out(5*j-5+2) <= alias_s_row(j);
+        v_slv_seq      := alias_s_row(j);
         swrite(v_wline, "round[" & integer'image(j) &"].s_row ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
-        v_slv_seq := alias_m_col(j);
-        report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
+        arr_out(5*j-5+3) <= alias_m_col(j);
+        v_slv_seq      := alias_m_col(j);
         swrite(v_wline, "round[" & integer'image(j) &"].m_col ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
-        v_slv_seq := alias_k_sch(j);
-        report "Result : " & integer'image(j) & " - " & to_hstring(v_slv_seq) ;
+        arr_out(5*j-5+4) <= alias_k_sch(j);
+        v_slv_seq      := alias_k_sch(j);
         swrite(v_wline, "round[" & integer'image(j) &"].k_sch ");
         hwrite(v_wline, v_slv_seq);
         writeline(file_results, v_wline);
 
       end loop;
 
-      report "Cypher out :" & " - " & to_hstring(m_dat_tdata) ;
-      swrite(v_wline, "round[14].resul ");
-      hwrite(v_wline, m_dat_tdata);
-      writeline(file_results, v_wline);
+      -- compare the arrays, to check if the data is correct
+      for j in 1 to c_nr-1 loop
+
+        wait for 0 ns;
+
+        write(std.textio.output,"start ");
+        write(std.textio.output, integer'image(j) & LF );
+        compare(arr_ref(5*j-3+0),arr_out(5*j-5+0));
+
+        write(std.textio.output,"s_box ");
+        write(std.textio.output, integer'image(j) & LF );
+        compare(arr_ref(5*j-3+1),arr_out(5*j-5+1));
+
+        write(std.textio.output,"s_row ");
+        write(std.textio.output, integer'image(j) & LF );
+        compare(arr_ref(5*j-3+2),arr_out(5*j-5+2));
+
+        write(std.textio.output,"m_col ");
+        write(std.textio.output, integer'image(j) & LF );
+        compare(arr_ref(5*j-3+3),arr_out(5*j-5+3));
+
+        write(std.textio.output,"k_sch ");
+        write(std.textio.output, integer'image(j) & LF );
+        compare(arr_ref(5*j-3+4),arr_out(5*j-5+4));
+
+        write(txt, LF);
+        writeline(output , txt);
+
+      end loop;
+      -- in the final loop the content is arranged different
+
+        write(std.textio.output,"start ");
+        write(std.textio.output, integer'image(14) & LF );
+        compare(arr_ref(5*14-3+0),arr_out(5*14-5+0));
+
+        write(std.textio.output,"s_box ");
+        write(std.textio.output, integer'image(14) & LF );
+        compare(arr_ref(5*14-3+1),arr_out(5*14-5+1));
+
+        write(std.textio.output,"s_row ");
+        write(std.textio.output, integer'image(14) & LF );
+        compare(arr_ref(5*14-3+2),arr_out(5*14-5+2));
+
+        write(std.textio.output,"k_sch ");
+        write(std.textio.output, integer'image(14) & LF );
+        compare(arr_ref(5*14-3+3),arr_out(5*14-5+4));
+
+        write(txt, LF);
+        writeline(output , txt);
+
+      -- and the result is in the end of the file
+        write(std.textio.output,"CYPHER OUT ");
+        write(std.textio.output, integer'image(14) & LF );
+        compare((arr_ref(5*14-3+4)) , m_dat_tdata);
+
+        write(txt, LF);
+        writeline(output , txt);
+
+
 
     --! closing files before exiting test bench
     file_close(file_inputs);
