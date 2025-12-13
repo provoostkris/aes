@@ -23,6 +23,10 @@ while {-1 != [gets $fp line]} {
 }
 
 #
+# Add various constraints to the project
+add_files ../../constraints/timings.xdc
+
+#
 # Update to set top and file compile order
 update_compile_order -fileset sources_1
 
