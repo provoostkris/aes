@@ -1,9 +1,9 @@
 ### AES
-The design is an VHDL implementation of an AES algorithm as specified in the AES documents. 
+The design is an VHDL implementation of an AES algorithm as specified in the AES documents.
 As reference the FIPS 197 publication is used:
 [FIPS 197](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.197.pdf)
 
-The code currently supports 
+The code currently supports
 [vhdl](vhdl/) design files
 
 ```
@@ -33,12 +33,12 @@ The code will work stand alone, compile in desired library and use as is.
 ### Useage
 The design can be used to study a possible implementation, based on the FIPS 197 publication. The code is 100 % synhtesizeable.
 A reference project for [quartus](quartus/) is included.
-The code is an unrolled implementation, meaning all rounds have dedicated logic, and the datastream passes through a new set of transformation logic for each round. 
+The code is an unrolled implementation, meaning all rounds have dedicated logic, and the datastream passes through a new set of transformation logic for each round.
 Optimization is possible in the transformation functions and in the data processing method.
 The design is implented as single clock synchronous processing, which avoids clock domain crossing.
 
 ### User input
 *SW(0) is used to reset the design.
 
-### support 
+### support
 If you like the work and want to support, you can buy me a coffee ! : https://www.buymeacoffee.com/provoostkris
